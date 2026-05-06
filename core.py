@@ -3,11 +3,32 @@ import os
 import re
 import subprocess
 import tempfile
+import threading
 
 import PyPDF2
 import pytesseract
 import edge_tts
 from pdf2image import convert_from_path
+
+def _run_async(coro):
+    result = [None]
+    exc = [None]
+    def _target():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            result[0] = loop.run_until_complete(coro)
+        except Exception as e:
+            exc[0] = e
+        finally:
+            loop.close()
+    t = threading.Thread(target=_target, daemon=True)
+    t.start()
+    t.join()
+    if exc[0]:
+        raise exc[0]
+    return result[0]
+
 
 VOICE_MAP = {
     ("pt", "com.br"): "pt-BR-AntonioNeural",
@@ -191,7 +212,7 @@ def gerar_audio(
     prog(38, f"Voz selecionada: {voz} — {len(chunks)} partes em paralelo...")
 
     with tempfile.TemporaryDirectory() as tmp:
-        arquivos = asyncio.run(
+        arquivos = _run_async(
             _gerar_chunks_paralelo(chunks, voz, velocidade_lenta, tmp, progress_cb=prog)
         )
 
