@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF → Audiobook</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0d1a;
+      --surface:  #13132b;
+      --card:     #1a1a35;
+      --border:   #2e2e5a;
+      --accent:   #7c3aed;
+      --accent2:  #a855f7;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --text:     #e2e8f0;
+      --muted:    #94a3b8;
+      --radius:   14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header .icon { font-size: 3rem; line-height: 1; margin-bottom: 10px; }
+    header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-text-fill-color: transparent; }
+    header p { color: var(--muted); margin-top: 6px; font-size: .95rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 580px;
+    }
+    .card + .card { margin-top: 16px; }
+
+    #drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    #drop-zone:hover, #drop-zone.over {
+      border-color: var(--accent);
+      background: rgba(124,58,237,.07);
+    }
+    #drop-zone input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    #drop-zone .dz-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    #drop-zone .dz-text { font-size: .95rem; color: var(--muted); }
+    #drop-zone .dz-text strong { color: var(--accent2); }
+    #drop-zone.has-file { border-color: var(--green); background: rgba(16,185,129,.06); }
+    #drop-zone.has-file .dz-icon::before { content: '📄'; }
+
+    #file-info {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      background: rgba(124,58,237,.1);
+      border: 1px solid rgba(124,58,237,.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .9rem;
+    }
+    #file-info .fi-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #file-info .fi-size { color: var(--muted); font-size: .82rem; }
+    #file-info .fi-remove {
+      margin-left: auto; cursor: pointer; color: var(--muted);
+      background: none; border: none; font-size: 1.1rem; line-height: 1;
+    }
+    #file-info .fi-remove:hover { color: var(--red); }
+
+    .settings-toggle {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: none; color: var(--muted);
+      font-size: .9rem; cursor: pointer; padding: 0; margin-bottom: 0;
+      transition: color .2s;
+    }
+    .settings-toggle:hover { color: var(--text); }
+    .settings-toggle .arrow { transition: transform .2s; display: inline-block; }
+    .settings-toggle.open .arrow { transform: rotate(180deg); }
+
+    #settings-body { display: none; margin-top: 18px; }
+    #settings-body.open { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1/-1; }
+    label { font-size: .82rem; color: var(--muted); font-weight: 500; letter-spacing: .3px; }
+
+    select, input[type=range] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: .9rem;
+      padding: 8px 10px;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    select option { background: var(--surface); }
+
+    input[type=range] {
+      padding: 6px 0; border: none; background: transparent;
+      -webkit-appearance: none; appearance: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 6px; border-radius: 4px; background: #4c2a8a;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent2); margin-top: -5px; cursor: pointer;
+    }
+    input[type=range]::-moz-range-track {
+      height: 6px; border-radius: 4px; background: #4c2a8a;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--accent2); border: none; cursor: pointer;
+    }
+    .range-row { display: flex; align-items: center; gap: 10px; }
+    .range-row input { flex: 1; }
+    .range-val {
+      font-size: .85rem; color: var(--accent2); font-weight: 600;
+      min-width: 38px; text-align: right;
+    }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; background: var(--border);
+      border-radius: 22px; cursor: pointer; transition: .2s;
+    }
+    .slider::before {
+      content: ''; position: absolute; height: 16px; width: 16px;
+      left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s;
+    }
+    input:checked + .slider { background: var(--accent); }
+    input:checked + .slider::before { transform: translateX(18px); }
+
+    /* ── Convert button ── */
+    #btn-convert {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white; font-size: 1rem; font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      letter-spacing: .3px;
+    }
+    #btn-convert:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+    #btn-convert:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    #progress-card { display: none; }
+
+    .steps {
+      display: flex; gap: 8px; margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .step {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .8rem; color: var(--muted);
+      padding: 4px 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all .3s;
+    }
+    .step.active { color: var(--accent2); border-color: var(--accent); background: rgba(124,58,237,.1); }
+    .step.done { color: var(--green); border-color: var(--green); background: rgba(16,185,129,.08); }
+    .step .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .step.active .dot { animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .3; }
+    }
+
+    .prog-label {
+      display: flex; justify-content: space-between;
+      font-size: .85rem; margin-bottom: 8px;
+    }
+    .prog-label #prog-msg { color: var(--muted); }
+    .prog-label #prog-pct { color: var(--accent2); font-weight: 600; }
+
+    .prog-bar-track {
+      background: var(--surface); border-radius: 10px; height: 8px; overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      width: 0%;
+      transition: width .4s ease;
+    }
+
+    #result-card { display: none; }
+
+    .result-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+    }
+    .result-header .badge {
+      background: rgba(16,185,129,.15); color: var(--green);
+      border: 1px solid rgba(16,185,129,.3);
+      border-radius: 20px; padding: 4px 12px; font-size: .82rem; font-weight: 600;
+    }
+    .result-header .stats { color: var(--muted); font-size: .85rem; margin-left: auto; }
+
+    audio {
+      width: 100%; margin-bottom: 16px;
+      border-radius: 8px; accent-color: var(--accent);
+    }
+
+    #btn-download {
+      width: 100%; padding: 12px;
+      background: rgba(16,185,129,.15);
+      color: var(--green); font-size: .95rem; font-weight: 600;
+      border: 1px solid rgba(16,185,129,.3); border-radius: 10px;
+      cursor: pointer; transition: background .2s;
+      text-decoration: none; display: block; text-align: center;
+    }
+    #btn-download:hover { background: rgba(16,185,129,.25); }
+
+    #btn-new {
+      width: 100%; padding: 10px; margin-top: 10px;
+      background: transparent; color: var(--muted); font-size: .88rem;
+      border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    #btn-new:hover { color: var(--text); border-color: var(--accent); }
+
+    #error-box {
+      display: none; background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3); border-radius: 10px;
+      padding: 14px 16px; color: #fca5a5; font-size: .9rem; margin-top: 16px;
+    }
+
+    .waveform {
+      display: flex; align-items: flex-end; gap: 3px; height: 30px; margin: 16px auto;
+      justify-content: center;
+    }
+    .waveform span {
+      display: block; width: 4px; background: var(--accent2);
+      border-radius: 2px; animation: wave 1s ease-in-out infinite;
+    }
+    .waveform span:nth-child(2) { animation-delay: .1s; }
+    .waveform span:nth-child(3) { animation-delay: .2s; }
+    .waveform span:nth-child(4) { animation-delay: .3s; }
+    .waveform span:nth-child(5) { animation-delay: .4s; }
+    .waveform span:nth-child(6) { animation-delay: .3s; }
+    .waveform span:nth-child(7) { animation-delay: .2s; }
+    .waveform span:nth-child(8) { animation-delay: .1s; }
+
+    @keyframes wave {
+      0%, 100% { height: 6px; }
+      50% { height: 26px; }
+    }
+
+    footer {
+      margin-top: auto; padding-top: 48px; color: var(--muted); font-size: .8rem; text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      #settings-body.open { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>PDF <span>→ Audiobook</span></h1>
+  <p>Converta qualquer PDF em MP3 — grátis e sem limites</p>
+</header>
+
+<div class="card" id="upload-card">
+  <div id="drop-zone">
+    <input type="file" id="file-input" accept=".pdf" />
+    <div class="dz-icon">📂</div>
+    <div class="dz-text">
+      <strong>Arraste o PDF aqui</strong> ou clique para selecionar<br>
+      <span style="font-size:.8rem; color: var(--muted)">Apenas arquivos .pdf</span>
+    </div>
+  </div>
+
+  <div id="file-info">
+    <span style="font-size:1.4rem">📄</span>
+    <div>
+      <div class="fi-name" id="fi-name"></div>
+      <div class="fi-size" id="fi-size"></div>
+    </div>
+    <button class="fi-remove" id="btn-remove" title="Remover">✕</button>
+  </div>
+</div>
+
+<div class="card">
+  <button class="settings-toggle" id="settings-toggle">
+    <span>⚙️</span> Configurações
+    <span class="arrow">▾</span>
+  </button>
+
+  <div id="settings-body">
+    <div class="field">
+      <label>Idioma do PDF</label>
+      <select id="idioma">
+        <option value="pt">Português</option>
+        <option value="en">Inglês</option>
+        <option value="es">Espanhol</option>
+        <option value="fr">Francês</option>
+        <option value="de">Alemão</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Sotaque</label>
+      <select id="sotaque">
+        <option value="com.br">🇧🇷 Brasil</option>
+        <option value="com">🇺🇸 EUA</option>
+        <option value="co.uk">🇬🇧 Reino Unido</option>
+        <option value="com.au">🇦🇺 Austrália</option>
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>Tamanho do chunk (caracteres)</label>
+      <div class="range-row">
+        <input type="range" id="chunk-size" min="500" max="3000" step="100" value="1800" />
+        <span class="range-val" id="chunk-val">1800</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Leitura lenta</label>
+      <div class="toggle-row">
+        <span style="font-size:.85rem; color:var(--muted)">Mais pausado</span>
+        <label class="switch">
+          <input type="checkbox" id="velocidade-lenta" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Remover código</label>
+      <div class="toggle-row">
+        <span style="font-size:.85rem; color:var(--muted)">Livros técnicos</span>
+        <label class="switch">
+          <input type="checkbox" id="remover-codigo" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding:16px">
+  <button id="btn-convert" disabled>Converter para Audiobook</button>
+  <div id="error-box"></div>
+</div>
+
+<div class="card" id="progress-card">
+  <div class="steps">
+    <div class="step" id="step-extract"><span class="dot"></span>Extraindo texto</div>
+    <div class="step" id="step-clean"><span class="dot"></span>Limpando</div>
+    <div class="step" id="step-audio"><span class="dot"></span>Gerando áudio</div>
+    <div class="step" id="step-merge"><span class="dot"></span>Finalizando</div>
+  </div>
+
+  <div class="waveform" id="waveform">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="prog-label">
+    <span id="prog-msg">Iniciando...</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="prog-bar-track">
+    <div class="prog-bar-fill" id="prog-bar"></div>
+  </div>
+</div>
+
+<div class="card" id="result-card">
+  <div class="result-header">
+    <span class="badge">Concluído!</span>
+    <span class="stats" id="result-stats"></span>
+  </div>
+
+  <audio id="audio-player" controls></audio>
+  <a id="btn-download" href="#" download>Baixar Audiobook MP3</a>
+  <button id="btn-new">+ Converter outro PDF</button>
+</div>
+
+<footer>Powered by Edge TTS · FastAPI · ffmpeg · CodeBy G.Buck </footer>
+
+<script>
+  const dropZone    = document.getElementById('drop-zone');
+  const fileInput   = document.getElementById('file-input');
+  const fileInfo    = document.getElementById('file-info');
+  const fiName      = document.getElementById('fi-name');
+  const fiSize      = document.getElementById('fi-size');
+  const btnRemove   = document.getElementById('btn-remove');
+  const btnConvert  = document.getElementById('btn-convert');
+  const settingsTog = document.getElementById('settings-toggle');
+  const settingsBody= document.getElementById('settings-body');
+  const chunkSlider = document.getElementById('chunk-size');
+  const chunkVal    = document.getElementById('chunk-val');
+  const progCard    = document.getElementById('progress-card');
+  const progBar     = document.getElementById('prog-bar');
+  const progMsg     = document.getElementById('prog-msg');
+  const progPct     = document.getElementById('prog-pct');
+  const resultCard  = document.getElementById('result-card');
+  const audioPlayer = document.getElementById('audio-player');
+  const btnDownload = document.getElementById('btn-download');
+  const btnNew      = document.getElementById('btn-new');
+  const errorBox    = document.getElementById('error-box');
+  const uploadCard  = document.getElementById('upload-card');
+  const waveform    = document.getElementById('waveform');
+
+  let selectedFile = null;
+
+  settingsTog.addEventListener('click', () => {
+    settingsTog.classList.toggle('open');
+    settingsBody.classList.toggle('open');
+  });
+
+
+  chunkSlider.addEventListener('input', () => {
+    chunkVal.textContent = chunkSlider.value;
+  });
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('over');
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) setFile(fileInput.files[0]);
+  });
+
+  function autoChunk(bytes) {
+    if (bytes < 204800)   return 1000;
+    if (bytes < 1048576)  return 1400;
+    if (bytes < 5242880)  return 1800;
+    if (bytes < 20971520) return 2200;
+    return 2500;
+  }
+
+  function setFile(file) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      showError('Apenas arquivos PDF são suportados.');
+      return;
+    }
+    selectedFile = file;
+    fiName.textContent = file.name;
+    fiSize.textContent = formatSize(file.size);
+    fileInfo.style.display = 'flex';
+    dropZone.classList.add('has-file');
+    btnConvert.disabled = false;
+    hideError();
+    const chunk = autoChunk(file.size);
+    chunkSlider.value = chunk;
+    chunkVal.textContent = chunk;
+  }
+
+  btnRemove.addEventListener('click', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    fileInfo.style.display = 'none';
+    dropZone.classList.remove('has-file');
+    btnConvert.disabled = true;
+  });
+
+  btnConvert.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    hideError();
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('idioma', document.getElementById('idioma').value);
+    formData.append('sotaque', document.getElementById('sotaque').value);
+    formData.append('velocidade_lenta', document.getElementById('velocidade-lenta').checked);
+    formData.append('chunk_size', chunkSlider.value);
+    formData.append('remover_codigo', document.getElementById('remover-codigo').checked);
+
+    btnConvert.disabled = true;
+    btnConvert.textContent = 'Enviando...';
+    showProgress();
+
+    let jobId;
+    try {
+      const res = await fetch('/api/convert', { method: 'POST', body: formData });
+      if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
+      const data = await res.json();
+      jobId = data.job_id;
+    } catch (err) {
+      showError('Falha ao iniciar a conversão: ' + err.message);
+      resetUI();
+      return;
+    }
+
+    listenProgress(jobId, selectedFile.name.replace('.pdf', '.mp3'));
+  });
+
+  function listenProgress(jobId, filename) {
+    let errCount = 0;
+
+    function connect() {
+      const es = new EventSource(`/api/progress/${jobId}`);
+
+      es.onmessage = (e) => {
+        errCount = 0;
+        const data = JSON.parse(e.data);
+        if (data.type === 'ping') return;
+
+        if (data.type === 'progress') {
+          updateProgress(data.pct, data.msg);
+        } else if (data.type === 'done') {
+          es.close();
+          updateProgress(100, 'Concluído!');
+          setTimeout(() => showResult(jobId, filename, data.word_count), 600);
+        } else if (data.type === 'error') {
+          es.close();
+          showError('Erro durante a conversão: ' + data.msg);
+          resetUI();
+        }
+      };
+
+      es.onerror = () => {
+        es.close();
+        errCount++;
+        if (errCount <= 5) {
+          setTimeout(connect, 2000 * errCount);
+        } else {
+          showError('Conexão perdida com o servidor após várias tentativas.');
+          resetUI();
+        }
+      };
+    }
+
+    connect();
+  }
+
+  function updateProgress(pct, msg) {
+    progBar.style.width = pct + '%';
+    progMsg.textContent = msg;
+    progPct.textContent = pct + '%';
+
+    const steps = {
+      'step-extract': [0, 30],
+      'step-clean':   [30, 40],
+      'step-audio':   [40, 90],
+      'step-merge':   [90, 100],
+    };
+    for (const [id, [min, max]] of Object.entries(steps)) {
+      const el = document.getElementById(id);
+      if (pct >= max) {
+        el.className = 'step done';
+        el.querySelector('.dot').textContent = '';
+      } else if (pct >= min) {
+        el.className = 'step active';
+      }
+    }
+  }
+
+  function showProgress() {
+    progCard.style.display = 'block';
+    resultCard.style.display = 'none';
+    waveform.style.display = 'flex';
+    updateProgress(0, 'Iniciando...');
+  }
+
+  function showResult(jobId, filename, wordCount) {
+    progCard.style.display = 'none';
+    resultCard.style.display = 'block';
+
+    const url = `/api/download/${jobId}`;
+    audioPlayer.src = url;
+    btnDownload.href = url;
+    btnDownload.download = filename;
+
+    if (wordCount) {
+      document.getElementById('result-stats').textContent =
+        `${wordCount.toLocaleString()} palavras`;
+    }
+
+    btnConvert.textContent = 'Converter para Audiobook';
+  }
+
+  btnNew.addEventListener('click', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    fileInfo.style.display = 'none';
+    dropZone.classList.remove('has-file');
+    progCard.style.display = 'none';
+    resultCard.style.display = 'none';
+    audioPlayer.src = '';
+    btnConvert.disabled = true;
+    btnConvert.textContent = 'Converter para Audiobook';
+    hideError();
+
+    ['step-extract','step-clean','step-audio','step-merge'].forEach(id => {
+      document.getElementById(id).className = 'step';
+    });
+  });
+
+  function resetUI() {
+    btnConvert.disabled = false;
+    btnConvert.textContent = 'Converter para Audiobook';
+    progCard.style.display = 'none';
+  }
+
+  function showError(msg) {
+    errorBox.textContent = '⚠️ ' + msg;
+    errorBox.style.display = 'block';
+  }
+
+  function hideError() {
+    errorBox.style.display = 'none';
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+</script>
+</body>
+</html>
