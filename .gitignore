@@ -5,3 +5,6 @@ __pycache__/
 .env
 *.mp3
 *.pdf
+*.m4b
+.venv/
+.pytest_cache/

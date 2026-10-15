@@ -1,0 +1,17 @@
+services:
+  audiobook:
+    build: .
+    restart: unless-stopped
+    # Exposto só para o nginx local. Para acessar direto pela porta 8000, troque por "8000:8000".
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      MAX_CONCURRENT_JOBS: "1"   # 1 para instâncias de 512 MB–1 GB; 2+ com 2 GB ou mais
+      MAX_UPLOAD_MB: "200"
+      JOB_TTL_HOURS: "6"         # áudios prontos ficam disponíveis por esse tempo
+      TTS_CONCURRENCY: "6"       # requisições simultâneas ao Edge TTS por job
+    volumes:
+      - audiobook-data:/data
+
+volumes:
+  audiobook-data:

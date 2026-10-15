@@ -1,0 +1,10 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+*.pdf
+*.mp3
+*.m4b
+tests
+deploy

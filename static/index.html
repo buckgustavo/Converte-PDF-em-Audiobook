@@ -15,6 +15,7 @@
       --accent:   #7c3aed;
       --accent2:  #a855f7;
       --green:    #10b981;
+      --amber:    #f59e0b;
       --red:      #ef4444;
       --text:     #e2e8f0;
       --muted:    #94a3b8;
@@ -32,260 +33,200 @@
       padding: 40px 16px 80px;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-    header .icon { font-size: 3rem; line-height: 1; margin-bottom: 10px; }
+    header { text-align: center; margin-bottom: 36px; }
     header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
-    header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-text-fill-color: transparent; }
+    header h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     header p { color: var(--muted); margin-top: 6px; font-size: .95rem; }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 28px;
+      padding: 24px 28px;
       width: 100%;
-      max-width: 580px;
+      max-width: 620px;
     }
     .card + .card { margin-top: 16px; }
+    .card h2 { font-size: .95rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .card h2 .hint { margin-left: auto; font-size: .78rem; font-weight: 400; color: var(--muted); }
 
     #drop-zone {
       border: 2px dashed var(--border);
       border-radius: 10px;
-      padding: 40px 20px;
+      padding: 36px 20px;
       text-align: center;
       cursor: pointer;
       transition: border-color .2s, background .2s;
       position: relative;
     }
-    #drop-zone:hover, #drop-zone.over {
-      border-color: var(--accent);
-      background: rgba(124,58,237,.07);
-    }
-    #drop-zone input[type=file] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-    }
+    #drop-zone:hover, #drop-zone.over { border-color: var(--accent); background: rgba(124,58,237,.07); }
+    #drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     #drop-zone .dz-icon { font-size: 2.5rem; margin-bottom: 8px; }
     #drop-zone .dz-text { font-size: .95rem; color: var(--muted); }
     #drop-zone .dz-text strong { color: var(--accent2); }
     #drop-zone.has-file { border-color: var(--green); background: rgba(16,185,129,.06); }
-    #drop-zone.has-file .dz-icon::before { content: '📄'; }
 
     #file-info {
-      display: none;
-      align-items: center;
-      gap: 12px;
-      margin-top: 14px;
-      background: rgba(124,58,237,.1);
-      border: 1px solid rgba(124,58,237,.25);
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: .9rem;
+      display: none; align-items: center; gap: 12px; margin-top: 14px;
+      background: rgba(124,58,237,.1); border: 1px solid rgba(124,58,237,.25);
+      border-radius: 8px; padding: 12px 16px; font-size: .9rem;
     }
+    #file-info > div { min-width: 0; }
     #file-info .fi-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #file-info .fi-size { color: var(--muted); font-size: .82rem; }
-    #file-info .fi-remove {
-      margin-left: auto; cursor: pointer; color: var(--muted);
-      background: none; border: none; font-size: 1.1rem; line-height: 1;
-    }
+    #file-info .fi-remove { margin-left: auto; cursor: pointer; color: var(--muted); background: none; border: none; font-size: 1.1rem; line-height: 1; }
     #file-info .fi-remove:hover { color: var(--red); }
 
-    .settings-toggle {
-      display: flex; align-items: center; gap: 8px;
-      background: none; border: none; color: var(--muted);
-      font-size: .9rem; cursor: pointer; padding: 0; margin-bottom: 0;
-      transition: color .2s;
-    }
-    .settings-toggle:hover { color: var(--text); }
-    .settings-toggle .arrow { transition: transform .2s; display: inline-block; }
-    .settings-toggle.open .arrow { transform: rotate(180deg); }
-
-    #settings-body { display: none; margin-top: 18px; }
-    #settings-body.open { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
-
-    .field { display: flex; flex-direction: column; gap: 6px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .field.full { grid-column: 1/-1; }
-    label { font-size: .82rem; color: var(--muted); font-weight: 500; letter-spacing: .3px; }
+    label, .label { font-size: .82rem; color: var(--muted); font-weight: 500; letter-spacing: .3px; }
 
-    select, input[type=range] {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: .9rem;
-      padding: 8px 10px;
-      width: 100%;
-      appearance: none;
-      -webkit-appearance: none;
-      cursor: pointer;
+    select, input[type=number] {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-size: .9rem; padding: 8px 10px; width: 100%;
     }
-    select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    select { cursor: pointer; }
+    select:focus, input[type=number]:focus { outline: 2px solid var(--accent); border-color: transparent; }
     select option { background: var(--surface); }
 
-    input[type=range] {
-      padding: 6px 0; border: none; background: transparent;
-      -webkit-appearance: none; appearance: none;
+    .voice-row { display: flex; gap: 8px; }
+    .voice-row select { flex: 1; min-width: 0; }
+    .btn-icon {
+      flex: none; width: 40px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--accent2); cursor: pointer; font-size: .9rem;
     }
-    input[type=range]::-webkit-slider-runnable-track {
-      height: 6px; border-radius: 4px; background: #4c2a8a;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--accent2); margin-top: -5px; cursor: pointer;
-    }
-    input[type=range]::-moz-range-track {
-      height: 6px; border-radius: 4px; background: #4c2a8a;
-    }
-    input[type=range]::-moz-range-thumb {
-      width: 16px; height: 16px; border-radius: 50%;
-      background: var(--accent2); border: none; cursor: pointer;
-    }
+    .btn-icon:hover { border-color: var(--accent); }
+    .btn-icon:disabled { opacity: .5; cursor: wait; }
+
+    input[type=range] { width: 100%; padding: 6px 0; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 4px; background: #4c2a8a; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); margin-top: -5px; }
+    input[type=range]::-moz-range-track { height: 6px; border-radius: 4px; background: #4c2a8a; }
+    input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); border: none; }
     .range-row { display: flex; align-items: center; gap: 10px; }
     .range-row input { flex: 1; }
-    .range-val {
-      font-size: .85rem; color: var(--accent2); font-weight: 600;
-      min-width: 38px; text-align: right;
-    }
+    .range-val { font-size: .85rem; color: var(--accent2); font-weight: 600; min-width: 46px; text-align: right; }
 
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
-    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .toggle-row .desc { font-size: .85rem; }
+    .toggle-row .desc small { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex: none; }
     .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0; background: var(--border);
-      border-radius: 22px; cursor: pointer; transition: .2s;
-    }
-    .slider::before {
-      content: ''; position: absolute; height: 16px; width: 16px;
-      left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s;
-    }
+    .slider { position: absolute; inset: 0; background: var(--border); border-radius: 22px; cursor: pointer; transition: .2s; }
+    .slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s; }
     input:checked + .slider { background: var(--accent); }
     input:checked + .slider::before { transform: translateX(18px); }
+    input:focus-visible + .slider { outline: 2px solid var(--accent2); outline-offset: 2px; }
 
-    /* ── Convert button ── */
+    .tech-opts { margin-top: 16px; display: grid; gap: 16px; transition: opacity .2s; }
+    .tech-opts.off { opacity: .45; pointer-events: none; }
+
+    .settings-toggle {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      background: none; border: none; color: var(--muted);
+      font-size: .9rem; cursor: pointer; padding: 0; transition: color .2s;
+    }
+    .settings-toggle:hover { color: var(--text); }
+    .settings-toggle .arrow { transition: transform .2s; display: inline-block; margin-left: auto; }
+    .settings-toggle.open .arrow { transform: rotate(180deg); }
+    #advanced-body { display: none; margin-top: 18px; }
+    #advanced-body.open { display: grid; }
+
+    .seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .seg label { flex: 1; text-align: center; padding: 8px 6px; cursor: pointer; font-size: .85rem; color: var(--muted); transition: background .2s, color .2s; }
+    .seg input { position: absolute; opacity: 0; pointer-events: none; }
+    .seg input:checked + span { color: var(--text); }
+    .seg label:has(input:checked) { background: rgba(124,58,237,.25); color: var(--text); }
+    .seg label + label { border-left: 1px solid var(--border); }
+
     #btn-convert {
       width: 100%; padding: 14px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white; font-size: 1rem; font-weight: 600;
       border: none; border-radius: 10px; cursor: pointer;
-      transition: opacity .2s, transform .1s;
-      letter-spacing: .3px;
+      transition: opacity .2s, transform .1s; letter-spacing: .3px;
     }
     #btn-convert:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
     #btn-convert:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    #progress-card { display: none; }
+    #progress-card, #result-card { display: none; }
 
-    .steps {
-      display: flex; gap: 8px; margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+    .steps { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .step {
-      display: flex; align-items: center; gap: 6px;
-      font-size: .8rem; color: var(--muted);
-      padding: 4px 10px; border-radius: 20px;
-      border: 1px solid var(--border);
-      transition: all .3s;
+      display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted);
+      padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); transition: all .3s;
     }
     .step.active { color: var(--accent2); border-color: var(--accent); background: rgba(124,58,237,.1); }
     .step.done { color: var(--green); border-color: var(--green); background: rgba(16,185,129,.08); }
     .step .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
     .step.active .dot { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .3; }
-    }
-
-    .prog-label {
-      display: flex; justify-content: space-between;
-      font-size: .85rem; margin-bottom: 8px;
-    }
-    .prog-label #prog-msg { color: var(--muted); }
+    .prog-label { display: flex; justify-content: space-between; gap: 12px; font-size: .85rem; margin-bottom: 8px; }
+    .prog-label #prog-msg { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .prog-label #prog-pct { color: var(--accent2); font-weight: 600; }
+    .prog-bar-track { background: var(--surface); border-radius: 10px; height: 8px; overflow: hidden; }
+    .prog-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; width: 0%; transition: width .4s ease; }
+    #prog-eta { font-size: .78rem; color: var(--muted); margin-top: 8px; min-height: 1em; }
 
-    .prog-bar-track {
-      background: var(--surface); border-radius: 10px; height: 8px; overflow: hidden;
+    #btn-cancel {
+      margin-top: 16px; width: 100%; padding: 9px; background: transparent; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: .85rem;
     }
-    .prog-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 10px;
-      width: 0%;
-      transition: width .4s ease;
-    }
+    #btn-cancel:hover { color: var(--red); border-color: var(--red); }
 
-    #result-card { display: none; }
-
-    .result-header {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-    }
-    .result-header .badge {
-      background: rgba(16,185,129,.15); color: var(--green);
-      border: 1px solid rgba(16,185,129,.3);
-      border-radius: 20px; padding: 4px 12px; font-size: .82rem; font-weight: 600;
-    }
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .badge { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.3); border-radius: 20px; padding: 4px 12px; font-size: .82rem; font-weight: 600; }
     .result-header .stats { color: var(--muted); font-size: .85rem; margin-left: auto; }
 
-    audio {
-      width: 100%; margin-bottom: 16px;
-      border-radius: 8px; accent-color: var(--accent);
+    audio { width: 100%; margin-bottom: 16px; border-radius: 8px; }
+
+    #chapters { display: none; margin-bottom: 16px; max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+    #chapters button {
+      display: flex; width: 100%; gap: 12px; padding: 9px 14px; background: none; border: none;
+      color: var(--text); font-size: .85rem; text-align: left; cursor: pointer;
     }
+    #chapters button + button { border-top: 1px solid var(--border); }
+    #chapters button:hover { background: rgba(124,58,237,.1); }
+    #chapters button.current { color: var(--accent2); }
+    #chapters .t { color: var(--muted); font-variant-numeric: tabular-nums; flex: none; }
+    #chapters .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    #warnings { display: none; background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); border-radius: 10px; padding: 10px 14px; color: #fcd34d; font-size: .83rem; margin-bottom: 16px; }
 
     #btn-download {
-      width: 100%; padding: 12px;
-      background: rgba(16,185,129,.15);
-      color: var(--green); font-size: .95rem; font-weight: 600;
-      border: 1px solid rgba(16,185,129,.3); border-radius: 10px;
-      cursor: pointer; transition: background .2s;
-      text-decoration: none; display: block; text-align: center;
+      width: 100%; padding: 12px; background: rgba(16,185,129,.15); color: var(--green);
+      font-size: .95rem; font-weight: 600; border: 1px solid rgba(16,185,129,.3); border-radius: 10px;
+      cursor: pointer; transition: background .2s; text-decoration: none; display: block; text-align: center;
     }
     #btn-download:hover { background: rgba(16,185,129,.25); }
 
     #btn-new {
-      width: 100%; padding: 10px; margin-top: 10px;
-      background: transparent; color: var(--muted); font-size: .88rem;
-      border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
-      transition: color .2s, border-color .2s;
+      width: 100%; padding: 10px; margin-top: 10px; background: transparent; color: var(--muted); font-size: .88rem;
+      border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: color .2s, border-color .2s;
     }
     #btn-new:hover { color: var(--text); border-color: var(--accent); }
 
-    #error-box {
-      display: none; background: rgba(239,68,68,.1);
-      border: 1px solid rgba(239,68,68,.3); border-radius: 10px;
-      padding: 14px 16px; color: #fca5a5; font-size: .9rem; margin-top: 16px;
-    }
+    #error-box { display: none; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 14px 16px; color: #fca5a5; font-size: .9rem; margin-top: 16px; }
 
-    .waveform {
-      display: flex; align-items: flex-end; gap: 3px; height: 30px; margin: 16px auto;
-      justify-content: center;
-    }
-    .waveform span {
-      display: block; width: 4px; background: var(--accent2);
-      border-radius: 2px; animation: wave 1s ease-in-out infinite;
-    }
-    .waveform span:nth-child(2) { animation-delay: .1s; }
-    .waveform span:nth-child(3) { animation-delay: .2s; }
-    .waveform span:nth-child(4) { animation-delay: .3s; }
+    .waveform { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin: 16px auto; justify-content: center; }
+    .waveform span { display: block; width: 4px; background: var(--accent2); border-radius: 2px; animation: wave 1s ease-in-out infinite; }
+    .waveform span:nth-child(2), .waveform span:nth-child(8) { animation-delay: .1s; }
+    .waveform span:nth-child(3), .waveform span:nth-child(7) { animation-delay: .2s; }
+    .waveform span:nth-child(4), .waveform span:nth-child(6) { animation-delay: .3s; }
     .waveform span:nth-child(5) { animation-delay: .4s; }
-    .waveform span:nth-child(6) { animation-delay: .3s; }
-    .waveform span:nth-child(7) { animation-delay: .2s; }
-    .waveform span:nth-child(8) { animation-delay: .1s; }
+    @keyframes wave { 0%, 100% { height: 6px; } 50% { height: 26px; } }
 
-    @keyframes wave {
-      0%, 100% { height: 6px; }
-      50% { height: 26px; }
-    }
+    footer { margin-top: auto; padding-top: 48px; color: var(--muted); font-size: .8rem; text-align: center; }
 
-    footer {
-      margin-top: auto; padding-top: 48px; color: var(--muted); font-size: .8rem; text-align: center;
-    }
-
-    @media (max-width: 480px) {
-      #settings-body.open { grid-template-columns: 1fr; }
+    @media (max-width: 520px) {
+      .card { padding: 20px 18px; }
+      .grid { grid-template-columns: 1fr; }
       .field.full { grid-column: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .waveform span, .step.active .dot { animation: none; }
     }
   </style>
 </head>
@@ -293,114 +234,137 @@
 
 <header>
   <h1>PDF <span>→ Audiobook</span></h1>
-  <p>Converta qualquer PDF em MP3 — grátis e sem limites</p>
+  <p>Converta qualquer PDF em audiobook, com capítulos e narração pensada para livros técnicos</p>
 </header>
 
 <div class="card" id="upload-card">
   <div id="drop-zone">
-    <input type="file" id="file-input" accept=".pdf" />
+    <input type="file" id="file-input" accept=".pdf,application/pdf" aria-label="Selecionar PDF" />
     <div class="dz-icon">📂</div>
     <div class="dz-text">
       <strong>Arraste o PDF aqui</strong> ou clique para selecionar<br>
-      <span style="font-size:.8rem; color: var(--muted)">Apenas arquivos .pdf</span>
+      <span style="font-size:.8rem">PDFs digitais ou escaneados (OCR automático)</span>
     </div>
   </div>
-
   <div id="file-info">
     <span style="font-size:1.4rem">📄</span>
     <div>
       <div class="fi-name" id="fi-name"></div>
       <div class="fi-size" id="fi-size"></div>
     </div>
-    <button class="fi-remove" id="btn-remove" title="Remover">✕</button>
+    <button class="fi-remove" id="btn-remove" title="Remover" aria-label="Remover arquivo">✕</button>
   </div>
 </div>
 
 <div class="card">
-  <button class="settings-toggle" id="settings-toggle">
-    <span>⚙️</span> Configurações
-    <span class="arrow">▾</span>
-  </button>
-
-  <div id="settings-body">
+  <h2>🎙️ Voz</h2>
+  <div class="grid">
     <div class="field">
-      <label>Idioma do PDF</label>
-      <select id="idioma">
-        <option value="pt">Português</option>
-        <option value="en">Inglês</option>
-        <option value="es">Espanhol</option>
-        <option value="fr">Francês</option>
-        <option value="de">Alemão</option>
-      </select>
+      <label for="idioma">Idioma do livro</label>
+      <select id="idioma"></select>
     </div>
-
     <div class="field">
-      <label>Sotaque</label>
-      <select id="sotaque">
-        <option value="com.br">🇧🇷 Brasil</option>
-        <option value="com">🇺🇸 EUA</option>
-        <option value="co.uk">🇬🇧 Reino Unido</option>
-        <option value="com.au">🇦🇺 Austrália</option>
-      </select>
+      <label for="voz">Narrador</label>
+      <div class="voice-row">
+        <select id="voz"></select>
+        <button class="btn-icon" id="btn-preview" title="Ouvir prévia" aria-label="Ouvir prévia da voz">▶</button>
+      </div>
     </div>
-
     <div class="field full">
-      <label>Tamanho do chunk (caracteres)</label>
+      <label for="velocidade">Velocidade</label>
+      <div class="range-row">
+        <input type="range" id="velocidade" min="-50" max="50" step="5" value="0" />
+        <span class="range-val" id="velocidade-val">1,00x</span>
+      </div>
+    </div>
+  </div>
+  <audio id="preview-player" hidden></audio>
+</div>
+
+<div class="card">
+  <div class="toggle-row">
+    <div class="desc">
+      <strong>💻 Modo livro técnico</strong>
+      <small>Pronúncia de termos (C++, JSON, DRY…), identificadores como <code>getUserName</code>, dicas e avisos destacados</small>
+    </div>
+    <label class="switch"><input type="checkbox" id="modo-tecnico" checked /><span class="slider"></span></label>
+  </div>
+
+  <div class="tech-opts" id="tech-opts">
+    <div class="field">
+      <span class="label">Blocos de código</span>
+      <div class="seg" role="radiogroup">
+        <label><input type="radio" name="codigo" value="anunciar" checked /><span>Anunciar</span></label>
+        <label><input type="radio" name="codigo" value="omitir" /><span>Pular</span></label>
+        <label><input type="radio" name="codigo" value="ler" /><span>Ler em voz alta</span></label>
+      </div>
+      <small style="color:var(--muted);font-size:.78rem" id="codigo-desc"></small>
+    </div>
+    <div class="toggle-row">
+      <div class="desc">
+        Segunda voz em títulos, dicas e código
+        <small>Alterna narrador e narradora para marcar a estrutura do livro</small>
+      </div>
+      <label class="switch"><input type="checkbox" id="voz-destaque" checked /><span class="slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <button class="settings-toggle" id="advanced-toggle" aria-expanded="false">
+    <span>⚙️</span> Avançado <span class="arrow">▾</span>
+  </button>
+  <div id="advanced-body" class="grid">
+    <div class="field">
+      <label for="pag-ini">Da página</label>
+      <input type="number" id="pag-ini" min="1" placeholder="início" />
+    </div>
+    <div class="field">
+      <label for="pag-fim">Até a página</label>
+      <input type="number" id="pag-fim" min="1" placeholder="fim" />
+    </div>
+    <div class="field">
+      <span class="label">Formato</span>
+      <div class="seg" role="radiogroup">
+        <label><input type="radio" name="formato" value="mp3" checked /><span>MP3</span></label>
+        <label><input type="radio" name="formato" value="m4b" /><span>M4B</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="chunk-size">Tamanho do trecho</label>
       <div class="range-row">
         <input type="range" id="chunk-size" min="500" max="3000" step="100" value="1800" />
         <span class="range-val" id="chunk-val">1800</span>
       </div>
     </div>
-
-    <div class="field">
-      <label>Leitura lenta</label>
-      <div class="toggle-row">
-        <span style="font-size:.85rem; color:var(--muted)">Mais pausado</span>
-        <label class="switch">
-          <input type="checkbox" id="velocidade-lenta" />
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Remover código</label>
-      <div class="toggle-row">
-        <span style="font-size:.85rem; color:var(--muted)">Livros técnicos</span>
-        <label class="switch">
-          <input type="checkbox" id="remover-codigo" checked />
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
+    <small class="field full" style="color:var(--muted);font-size:.78rem">
+      Ambos os formatos levam marcadores de capítulo. M4B é o formato nativo de audiobook (Apple Books, Smart AudioBook Player, VLC).
+    </small>
   </div>
 </div>
 
 <div class="card" style="padding:16px">
   <button id="btn-convert" disabled>Converter para Audiobook</button>
-  <div id="error-box"></div>
+  <div id="error-box" role="alert"></div>
 </div>
 
 <div class="card" id="progress-card">
   <div class="steps">
     <div class="step" id="step-extract"><span class="dot"></span>Extraindo texto</div>
-    <div class="step" id="step-clean"><span class="dot"></span>Limpando</div>
+    <div class="step" id="step-clean"><span class="dot"></span>Roteiro</div>
     <div class="step" id="step-audio"><span class="dot"></span>Gerando áudio</div>
-    <div class="step" id="step-merge"><span class="dot"></span>Finalizando</div>
+    <div class="step" id="step-merge"><span class="dot"></span>Capítulos</div>
   </div>
-
-  <div class="waveform" id="waveform">
-    <span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
+  <div class="waveform" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
-
   <div class="prog-label">
     <span id="prog-msg">Iniciando...</span>
     <span id="prog-pct">0%</span>
   </div>
-  <div class="prog-bar-track">
-    <div class="prog-bar-fill" id="prog-bar"></div>
-  </div>
+  <div class="prog-bar-track"><div class="prog-bar-fill" id="prog-bar"></div></div>
+  <div id="prog-eta"></div>
+  <button id="btn-cancel">Cancelar</button>
 </div>
 
 <div class="card" id="result-card">
@@ -408,249 +372,336 @@
     <span class="badge">Concluído!</span>
     <span class="stats" id="result-stats"></span>
   </div>
-
-  <audio id="audio-player" controls></audio>
-  <a id="btn-download" href="#" download>Baixar Audiobook MP3</a>
+  <div id="warnings"></div>
+  <audio id="audio-player" controls preload="metadata"></audio>
+  <div id="chapters"></div>
+  <a id="btn-download" href="#" download>Baixar Audiobook</a>
   <button id="btn-new">+ Converter outro PDF</button>
 </div>
 
-<footer>Powered by Edge TTS · FastAPI · ffmpeg · CodeBy G.Buck </footer>
+<footer>Powered by Edge TTS · PyMuPDF · FastAPI · ffmpeg · CodeBy G.Buck</footer>
 
 <script>
-  const dropZone    = document.getElementById('drop-zone');
-  const fileInput   = document.getElementById('file-input');
-  const fileInfo    = document.getElementById('file-info');
-  const fiName      = document.getElementById('fi-name');
-  const fiSize      = document.getElementById('fi-size');
-  const btnRemove   = document.getElementById('btn-remove');
-  const btnConvert  = document.getElementById('btn-convert');
-  const settingsTog = document.getElementById('settings-toggle');
-  const settingsBody= document.getElementById('settings-body');
-  const chunkSlider = document.getElementById('chunk-size');
-  const chunkVal    = document.getElementById('chunk-val');
-  const progCard    = document.getElementById('progress-card');
-  const progBar     = document.getElementById('prog-bar');
-  const progMsg     = document.getElementById('prog-msg');
-  const progPct     = document.getElementById('prog-pct');
-  const resultCard  = document.getElementById('result-card');
-  const audioPlayer = document.getElementById('audio-player');
-  const btnDownload = document.getElementById('btn-download');
-  const btnNew      = document.getElementById('btn-new');
-  const errorBox    = document.getElementById('error-box');
-  const uploadCard  = document.getElementById('upload-card');
-  const waveform    = document.getElementById('waveform');
+  const $ = id => document.getElementById(id);
+  const dropZone = $('drop-zone'), fileInput = $('file-input'), fileInfo = $('file-info');
+  const btnConvert = $('btn-convert'), errorBox = $('error-box');
+  const selIdioma = $('idioma'), selVoz = $('voz'), velocidade = $('velocidade');
+  const chunkSlider = $('chunk-size');
+  const progCard = $('progress-card'), resultCard = $('result-card');
+  const audioPlayer = $('audio-player'), previewPlayer = $('preview-player');
 
-  let selectedFile = null;
+  const PREFS_KEY = 'pdf2audiobook.prefs';
+  const CODIGO_DESC = {
+    anunciar: 'Diz "Exemplo de código em Python, com 12 linhas" e segue a leitura.',
+    omitir: 'Pula os blocos de código em silêncio.',
+    ler: 'Lê o código linha a linha (bom para trechos curtos).',
+  };
 
-  settingsTog.addEventListener('click', () => {
-    settingsTog.classList.toggle('open');
-    settingsBody.classList.toggle('open');
+  let selectedFile = null, catalogo = null, jobAtual = null, eventSource = null;
+
+  // ── Preferências (por navegador) ──
+  function lerPrefs() { try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; } catch { return {}; } }
+  function salvarPrefs() {
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify({
+        idioma: selIdioma.value, voz: selVoz.value, velocidade: velocidade.value,
+        modo_tecnico: $('modo-tecnico').checked, voz_destaque: $('voz-destaque').checked,
+        codigo: radio('codigo'), formato: radio('formato'),
+      }));
+    } catch {}
+  }
+  const radio = name => document.querySelector(`input[name=${name}]:checked`).value;
+  const setRadio = (name, v) => { const el = document.querySelector(`input[name=${name}][value="${v}"]`); if (el) el.checked = true; };
+
+  // ── Vozes ──
+  async function carregarVozes() {
+    const res = await fetch('/api/voices');
+    catalogo = await res.json();
+    for (const [id, nome] of Object.entries(catalogo.idiomas)) selIdioma.add(new Option(nome, id));
+    const p = lerPrefs();
+    if (p.idioma) selIdioma.value = p.idioma;
+    preencherVozes(p.voz);
+    if (p.velocidade !== undefined) velocidade.value = p.velocidade;
+    if (p.modo_tecnico !== undefined) $('modo-tecnico').checked = p.modo_tecnico;
+    if (p.voz_destaque !== undefined) $('voz-destaque').checked = p.voz_destaque;
+    if (p.codigo) setRadio('codigo', p.codigo);
+    if (p.formato) setRadio('formato', p.formato);
+    atualizarVelocidade(); atualizarTecnico();
+  }
+
+  function preencherVozes(preferida) {
+    selVoz.innerHTML = '';
+    for (const v of catalogo.vozes.filter(v => v.idioma === selIdioma.value)) {
+      const nome = v.id.split('-')[2].replace(/(Multilingual)?Neural$/, '');
+      selVoz.add(new Option(`${nome} — ${v.regiao} (${v.genero === 'F' ? 'fem.' : 'masc.'})`, v.id));
+    }
+    selVoz.value = preferida && [...selVoz.options].some(o => o.value === preferida)
+      ? preferida : catalogo.padrao[selIdioma.value];
+  }
+
+  selIdioma.addEventListener('change', () => { preencherVozes(); salvarPrefs(); });
+  selVoz.addEventListener('change', salvarPrefs);
+
+  function atualizarVelocidade() {
+    $('velocidade-val').textContent = (1 + velocidade.value / 100).toFixed(2).replace('.', ',') + 'x';
+  }
+  velocidade.addEventListener('input', atualizarVelocidade);
+  velocidade.addEventListener('change', salvarPrefs);
+
+  $('btn-preview').addEventListener('click', async () => {
+    const btn = $('btn-preview');
+    if (!previewPlayer.paused) { previewPlayer.pause(); btn.textContent = '▶'; return; }
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      const fd = new FormData();
+      fd.append('voz', selVoz.value);
+      fd.append('velocidade', velocidade.value);
+      const res = await fetch('/api/preview', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error((await res.json()).detail || res.status);
+      if (previewPlayer.src) URL.revokeObjectURL(previewPlayer.src);
+      previewPlayer.src = URL.createObjectURL(await res.blob());
+      await previewPlayer.play();
+      btn.textContent = '■';
+    } catch (err) {
+      showError('Não foi possível gerar a prévia: ' + err.message);
+      btn.textContent = '▶';
+    } finally { btn.disabled = false; }
   });
+  previewPlayer.addEventListener('ended', () => { $('btn-preview').textContent = '▶'; });
 
+  // ── Modo técnico ──
+  function atualizarTecnico() {
+    $('tech-opts').classList.toggle('off', !$('modo-tecnico').checked);
+    $('codigo-desc').textContent = CODIGO_DESC[radio('codigo')];
+  }
+  $('modo-tecnico').addEventListener('change', () => { atualizarTecnico(); salvarPrefs(); });
+  $('voz-destaque').addEventListener('change', salvarPrefs);
+  document.querySelectorAll('input[name=codigo], input[name=formato]').forEach(el =>
+    el.addEventListener('change', () => { atualizarTecnico(); salvarPrefs(); }));
 
-  chunkSlider.addEventListener('input', () => {
-    chunkVal.textContent = chunkSlider.value;
+  // ── Avançado ──
+  $('advanced-toggle').addEventListener('click', () => {
+    const open = $('advanced-body').classList.toggle('open');
+    $('advanced-toggle').classList.toggle('open', open);
+    $('advanced-toggle').setAttribute('aria-expanded', open);
   });
+  chunkSlider.addEventListener('input', () => { $('chunk-val').textContent = chunkSlider.value; });
 
+  // ── Upload ──
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
   dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('over');
-    const file = e.dataTransfer.files[0];
-    if (file) setFile(file);
+    e.preventDefault(); dropZone.classList.remove('over');
+    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
   });
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files[0]) setFile(fileInput.files[0]);
-  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
 
   function autoChunk(bytes) {
-    if (bytes < 204800)   return 1000;
-    if (bytes < 1048576)  return 1400;
-    if (bytes < 5242880)  return 1800;
+    if (bytes < 204800) return 1000;
+    if (bytes < 1048576) return 1400;
+    if (bytes < 5242880) return 1800;
     if (bytes < 20971520) return 2200;
     return 2500;
   }
 
   function setFile(file) {
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-      showError('Apenas arquivos PDF são suportados.');
-      return;
-    }
+    if (!file.name.toLowerCase().endsWith('.pdf')) { showError('Apenas arquivos PDF são suportados.'); return; }
     selectedFile = file;
-    fiName.textContent = file.name;
-    fiSize.textContent = formatSize(file.size);
+    $('fi-name').textContent = file.name;
+    $('fi-size').textContent = formatSize(file.size);
     fileInfo.style.display = 'flex';
     dropZone.classList.add('has-file');
     btnConvert.disabled = false;
     hideError();
-    const chunk = autoChunk(file.size);
-    chunkSlider.value = chunk;
-    chunkVal.textContent = chunk;
+    chunkSlider.value = autoChunk(file.size);
+    $('chunk-val').textContent = chunkSlider.value;
   }
 
-  btnRemove.addEventListener('click', () => {
+  function limparArquivo() {
     selectedFile = null;
     fileInput.value = '';
     fileInfo.style.display = 'none';
     dropZone.classList.remove('has-file');
     btnConvert.disabled = true;
-  });
+  }
+  $('btn-remove').addEventListener('click', limparArquivo);
 
+  // ── Conversão ──
   btnConvert.addEventListener('click', async () => {
     if (!selectedFile) return;
     hideError();
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('idioma', document.getElementById('idioma').value);
-    formData.append('sotaque', document.getElementById('sotaque').value);
-    formData.append('velocidade_lenta', document.getElementById('velocidade-lenta').checked);
-    formData.append('chunk_size', chunkSlider.value);
-    formData.append('remover_codigo', document.getElementById('remover-codigo').checked);
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    fd.append('idioma', selIdioma.value);
+    fd.append('voz', selVoz.value);
+    fd.append('velocidade', velocidade.value);
+    fd.append('modo_tecnico', $('modo-tecnico').checked);
+    fd.append('voz_destaque', $('voz-destaque').checked);
+    fd.append('codigo', radio('codigo'));
+    fd.append('formato', radio('formato'));
+    fd.append('chunk_size', chunkSlider.value);
+    if ($('pag-ini').value) fd.append('pagina_inicio', $('pag-ini').value);
+    if ($('pag-fim').value) fd.append('pagina_fim', $('pag-fim').value);
 
     btnConvert.disabled = true;
     btnConvert.textContent = 'Enviando...';
     showProgress();
 
-    let jobId;
     try {
-      const res = await fetch('/api/convert', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
-      const data = await res.json();
-      jobId = data.job_id;
+      const res = await fetch('/api/convert', { method: 'POST', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `Erro HTTP ${res.status}`);
+      jobAtual = data.job_id;
     } catch (err) {
       showError('Falha ao iniciar a conversão: ' + err.message);
       resetUI();
       return;
     }
-
-    listenProgress(jobId, selectedFile.name.replace('.pdf', '.mp3'));
+    btnConvert.textContent = 'Convertendo...';
+    acompanhar(jobAtual);
   });
 
-  function listenProgress(jobId, filename) {
-    let errCount = 0;
+  function acompanhar(jobId) {
+    let falhas = 0, inicio = Date.now(), pctInicio = null;
 
-    function connect() {
-      const es = new EventSource(`/api/progress/${jobId}`);
-
-      es.onmessage = (e) => {
-        errCount = 0;
-        const data = JSON.parse(e.data);
-        if (data.type === 'ping') return;
-
-        if (data.type === 'progress') {
-          updateProgress(data.pct, data.msg);
-        } else if (data.type === 'done') {
-          es.close();
-          updateProgress(100, 'Concluído!');
-          setTimeout(() => showResult(jobId, filename, data.word_count), 600);
-        } else if (data.type === 'error') {
-          es.close();
-          showError('Erro durante a conversão: ' + data.msg);
-          resetUI();
+    function conectar() {
+      eventSource = new EventSource(`/api/progress/${jobId}`);
+      eventSource.onmessage = e => {
+        falhas = 0;
+        const job = JSON.parse(e.data);
+        if (job.status === 'queued') {
+          updateProgress(0, job.fila > 0 ? `Na fila — posição ${job.fila}` : 'Na fila...');
+        } else if (job.status === 'running') {
+          updateProgress(job.pct, job.msg);
+          // Estimativa de tempo restante durante a geração de áudio
+          if (job.pct >= 36 && job.pct < 92) {
+            if (pctInicio === null) { pctInicio = job.pct; inicio = Date.now(); }
+            const feito = job.pct - pctInicio;
+            if (feito >= 3) {
+              const seg = (Date.now() - inicio) / 1000 / feito * (92 - job.pct);
+              $('prog-eta').textContent = `Tempo restante estimado: ${formatTime(seg + 10)}`;
+            }
+          } else { $('prog-eta').textContent = ''; }
+        } else if (job.status === 'done') {
+          fechar(); updateProgress(100, 'Concluído!');
+          setTimeout(() => showResult(job), 500);
+        } else if (job.status === 'error') {
+          fechar(); showError('Erro durante a conversão: ' + job.erro); resetUI();
+        } else if (job.status === 'canceled') {
+          fechar(); showError('Conversão cancelada.'); resetUI();
         }
       };
-
-      es.onerror = () => {
-        es.close();
-        errCount++;
-        if (errCount <= 5) {
-          setTimeout(connect, 2000 * errCount);
-        } else {
-          showError('Conexão perdida com o servidor após várias tentativas.');
-          resetUI();
-        }
+      eventSource.onerror = () => {
+        fechar();
+        if (++falhas <= 8) setTimeout(conectar, 1500 * falhas);
+        else { showError('Conexão perdida com o servidor.'); resetUI(); }
       };
     }
-
-    connect();
+    conectar();
   }
 
-  function updateProgress(pct, msg) {
-    progBar.style.width = pct + '%';
-    progMsg.textContent = msg;
-    progPct.textContent = pct + '%';
+  function fechar() { if (eventSource) { eventSource.close(); eventSource = null; } }
 
-    const steps = {
-      'step-extract': [0, 30],
-      'step-clean':   [30, 40],
-      'step-audio':   [40, 90],
-      'step-merge':   [90, 100],
-    };
+  $('btn-cancel').addEventListener('click', async () => {
+    if (!jobAtual) return;
+    $('btn-cancel').textContent = 'Cancelando...';
+    try { await fetch(`/api/jobs/${jobAtual}`, { method: 'DELETE' }); } catch {}
+  });
+
+  function updateProgress(pct, msg) {
+    $('prog-bar').style.width = pct + '%';
+    $('prog-msg').textContent = msg;
+    $('prog-pct').textContent = pct + '%';
+    const steps = { 'step-extract': [1, 31], 'step-clean': [31, 35], 'step-audio': [35, 93], 'step-merge': [93, 100] };
     for (const [id, [min, max]] of Object.entries(steps)) {
-      const el = document.getElementById(id);
-      if (pct >= max) {
-        el.className = 'step done';
-        el.querySelector('.dot').textContent = '';
-      } else if (pct >= min) {
-        el.className = 'step active';
-      }
+      $(id).className = pct >= max ? 'step done' : pct >= min ? 'step active' : 'step';
     }
   }
 
   function showProgress() {
     progCard.style.display = 'block';
     resultCard.style.display = 'none';
-    waveform.style.display = 'flex';
-    updateProgress(0, 'Iniciando...');
+    $('btn-cancel').textContent = 'Cancelar';
+    $('prog-eta').textContent = '';
+    updateProgress(0, 'Enviando PDF...');
   }
 
-  function showResult(jobId, filename, wordCount) {
+  function showResult(job) {
     progCard.style.display = 'none';
     resultCard.style.display = 'block';
-
-    const url = `/api/download/${jobId}`;
+    const r = job.resultado;
+    const url = `/api/download/${job.id}`;
     audioPlayer.src = url;
-    btnDownload.href = url;
-    btnDownload.download = filename;
+    $('btn-download').href = url;
+    $('btn-download').download = `${job.nome}.${job.formato}`;
+    $('btn-download').textContent = `Baixar Audiobook ${job.formato.toUpperCase()}`;
 
-    if (wordCount) {
-      document.getElementById('result-stats').textContent =
-        `${wordCount.toLocaleString()} palavras`;
+    const partes = [`${r.palavras.toLocaleString('pt-BR')} palavras`, formatTime(r.duracao)];
+    if (r.capitulos.length > 1) partes.push(`${r.capitulos.length} capítulos`);
+    $('result-stats').textContent = partes.join(' · ');
+
+    const warn = $('warnings');
+    warn.style.display = r.avisos.length ? 'block' : 'none';
+    warn.textContent = r.avisos.map(a => '⚠️ ' + a).join('\n');
+
+    const box = $('chapters');
+    box.innerHTML = '';
+    box.style.display = r.capitulos.length > 1 ? 'block' : 'none';
+    for (const c of r.capitulos) {
+      const b = document.createElement('button');
+      b.dataset.inicio = c.inicio;
+      b.innerHTML = '<span class="t"></span><span class="n"></span>';
+      b.querySelector('.t').textContent = formatTime(c.inicio);
+      b.querySelector('.n').textContent = c.titulo;
+      b.title = c.titulo;
+      b.addEventListener('click', () => { audioPlayer.currentTime = c.inicio; audioPlayer.play(); });
+      box.appendChild(b);
     }
-
     btnConvert.textContent = 'Converter para Audiobook';
+    jobAtual = null;
   }
 
-  btnNew.addEventListener('click', () => {
-    selectedFile = null;
-    fileInput.value = '';
-    fileInfo.style.display = 'none';
-    dropZone.classList.remove('has-file');
+  audioPlayer.addEventListener('timeupdate', () => {
+    const botoes = [...$('chapters').children];
+    let atual = null;
+    for (const b of botoes) if (audioPlayer.currentTime >= +b.dataset.inicio) atual = b;
+    botoes.forEach(b => b.classList.toggle('current', b === atual));
+  });
+
+  $('btn-new').addEventListener('click', () => {
+    limparArquivo();
     progCard.style.display = 'none';
     resultCard.style.display = 'none';
-    audioPlayer.src = '';
-    btnConvert.disabled = true;
+    audioPlayer.removeAttribute('src');
+    audioPlayer.load();
     btnConvert.textContent = 'Converter para Audiobook';
     hideError();
-
-    ['step-extract','step-clean','step-audio','step-merge'].forEach(id => {
-      document.getElementById(id).className = 'step';
-    });
   });
 
   function resetUI() {
-    btnConvert.disabled = false;
+    jobAtual = null;
+    btnConvert.disabled = !selectedFile;
     btnConvert.textContent = 'Converter para Audiobook';
     progCard.style.display = 'none';
   }
 
-  function showError(msg) {
-    errorBox.textContent = '⚠️ ' + msg;
-    errorBox.style.display = 'block';
-  }
-
-  function hideError() {
-    errorBox.style.display = 'none';
-  }
+  function showError(msg) { errorBox.textContent = '⚠️ ' + msg; errorBox.style.display = 'block'; }
+  function hideError() { errorBox.style.display = 'none'; }
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
   }
+
+  function formatTime(s) {
+    s = Math.round(s);
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    return h ? `${h}h${String(m).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`;
+  }
+
+  carregarVozes().catch(() => showError('Não foi possível carregar a lista de vozes.'));
 </script>
 </body>
 </html>
